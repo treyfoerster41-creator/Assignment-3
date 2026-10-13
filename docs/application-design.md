@@ -174,12 +174,11 @@ I am working on 3.1 only now. The later milestones inform the handoff but are no
 
 Part 1 will contain the finalized design, early mockup, model/context boundaries, data plan, research mapping, reusable project instructions, truthful handoff, and first-person report with accessible repository/design/evidence links and an exact submitted commit. A working application is not expected. The provided Part 1 directions do not explicitly require a demo recording; recordings will be included when relevant to the milestone.
 
-Next work, after the design is accepted:
+The separate project and repository are now established, the student reviewed the Part 1 files in VS Code, and the design checkpoint is pushed. Next work, after Assignment 3.1 is submitted and the user requests Assignment 3.2:
 
-1. Complete and review the Part 1 documentation and clearly labeled starter structure in the separate Assignment 3 folder.
-2. Confirm the repository host/URL, then establish the initial Git checkpoint after the student reviews the files.
-3. Add the exact commit and accessible repository link to the report before submission.
-4. Stop at the 3.1 checkpoint. The later working-application and integration milestones are future work. The first implementation is expected to prioritize one complete practice; the second practice remains in the design and its implementation scope will be stated honestly.
+1. Revisit the remaining design choices before implementation: final grounding pace, handling of unavailable senses, phrase-routing rules, and model choice.
+2. Implement and verify only the scope defined by the Assignment 3.2 instructions, preserving the safety and user-control boundaries above.
+3. Keep the later integration/evaluation milestone separate. The first implementation is expected to prioritize one complete practice; the second practice remains in the design and its implementation scope will be stated honestly.
 
 Later verification will include timer drift/background interruption, pause/end behavior, model/save failures, refreshed/restarted persistence, and crisis access across all states. The final milestone needs at least fifteen fictional scenarios, three explicit behavior checks, a relevant selection of live-model cases, and demonstration/process recordings. Those outcomes have not occurred and will not be claimed in Part 1.
 
