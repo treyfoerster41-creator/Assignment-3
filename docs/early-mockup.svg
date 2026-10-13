@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="940" viewBox="0 0 1440 940" role="img" aria-labelledby="title desc">
+  <title id="title">Still: early guided meditation interface sketch</title>
+  <desc id="desc">Three proposed screens: choose between two short meditation practices, follow one paced breathing instruction at a time with pause and exit controls, and review saved fictional sessions. Sensory grounding uses the same one-step-at-a-time pattern. Crisis support is visible on every screen. This is a static draft, not an implemented application.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, sans-serif; fill: #183d36; }
+      .small { font-size: 14px; }
+      .body { font-size: 17px; }
+      .heading { font-size: 28px; font-weight: 700; }
+      .label { font-size: 15px; font-weight: 700; }
+      .muted { fill: #46635d; }
+      .white { fill: #fff; }
+    </style>
+  </defs>
+  <rect width="1440" height="940" fill="#f2f4ee"/>
+  <text x="44" y="53" font-size="32" font-weight="700">Still</text>
+  <text x="44" y="82" class="body muted">Assignment 3.1 - early meditation design / planned screens, not working software</text>
+  <text x="44" y="122" class="label">01 / TWO PRACTICE OPTIONS</text>
+  <text x="514" y="122" class="label">02 / ONE SKILL AT A TIME</text>
+  <text x="984" y="122" class="label">03 / REVIEW HISTORY</text>
+
+  <g transform="translate(44 143)">
+    <rect width="412" height="657" rx="20" fill="#fffdf7" stroke="#b9c9c0"/>
+    <text x="24" y="39" font-size="23" font-weight="700">still</text>
+    <rect x="240" y="17" width="148" height="33" rx="8" fill="#fff1e7" stroke="#bb6950"/>
+    <text x="253" y="38" class="small" style="fill:#8a3c28">Crisis support</text>
+    <text x="24" y="84" class="small muted">Coursework prototype / fictional use</text>
+    <text x="24" y="141" class="heading">Take a short pause.</text>
+    <text x="24" y="172" class="body muted">What might feel useful right now?</text>
+    <rect x="24" y="202" width="364" height="142" rx="13" fill="#e1ece2"/>
+    <text x="44" y="233" font-size="20" font-weight="700">Breathing meditation</text>
+    <text x="44" y="263" class="body">4 in / 6 out. Six cycles.</text>
+    <rect x="44" y="282" width="189" height="43" rx="8" fill="#245649"/>
+    <text x="61" y="309" class="body white">Start / about 70 sec</text>
+    <rect x="24" y="362" width="364" height="131" rx="13" fill="#f0eee4" stroke="#cdcbbd"/>
+    <text x="44" y="396" font-size="20" font-weight="700">Notice your surroundings</text>
+    <text x="44" y="424" class="body">5-4-3-2-1 sensory grounding</text>
+    <text x="44" y="451" class="small muted">One sense prompt at a time / about 78 sec</text>
+    <text x="24" y="535" class="label">No writing is needed to begin.</text>
+    <text x="24" y="565" class="small muted">Optional check-in stays separate from practice.</text>
+    <text x="24" y="633" class="small">Preferences</text>
+    <text x="274" y="633" class="small">History</text>
+  </g>
+
+  <g transform="translate(514 143)">
+    <rect width="412" height="657" rx="20" fill="#fffdf7" stroke="#b9c9c0"/>
+    <text x="24" y="39" font-size="23" font-weight="700">still</text>
+    <rect x="240" y="17" width="148" height="33" rx="8" fill="#fff1e7" stroke="#bb6950"/>
+    <text x="253" y="38" class="small" style="fill:#8a3c28">Crisis support</text>
+    <text x="24" y="84" class="small muted">Breathing meditation / cycle 2 of 6</text>
+    <text x="24" y="134" class="heading">Follow the pace.</text>
+    <circle cx="206" cy="297" r="119" fill="#e3eee4"/>
+    <circle cx="206" cy="297" r="94" fill="#c1d7c5"/>
+    <text x="151" y="286" font-size="27" font-weight="700">Inhale</text>
+    <text x="190" y="332" font-size="36">4</text>
+    <text x="92" y="452" class="body muted">Inhale 4 / exhale 6</text>
+    <text x="61" y="479" class="small muted">Grounding uses this layout, one sense at a time</text>
+    <rect x="24" y="507" width="364" height="7" rx="3" fill="#dbe3d9"/>
+    <rect x="24" y="507" width="100" height="7" rx="3" fill="#245649"/>
+    <rect x="24" y="540" width="170" height="46" rx="8" fill="#245649"/>
+    <text x="82" y="570" class="body white">Pause</text>
+    <rect x="218" y="540" width="170" height="46" rx="8" fill="#fff" stroke="#768e81"/>
+    <text x="247" y="570" class="body">End practice</text>
+    <text x="24" y="629" class="small muted">You can pause or leave at any point.</text>
+  </g>
+
+  <g transform="translate(984 143)">
+    <rect width="412" height="657" rx="20" fill="#fffdf7" stroke="#b9c9c0"/>
+    <text x="24" y="39" font-size="23" font-weight="700">still</text>
+    <rect x="240" y="17" width="148" height="33" rx="8" fill="#fff1e7" stroke="#bb6950"/>
+    <text x="253" y="38" class="small" style="fill:#8a3c28">Crisis support</text>
+    <text x="24" y="84" class="small muted">Fictional example records only</text>
+    <text x="24" y="141" class="heading">Your practice history</text>
+    <text x="24" y="172" class="body muted">Sessions and brief conversations.</text>
+    <rect x="24" y="203" width="364" height="119" rx="13" fill="#e1ece2"/>
+    <text x="42" y="235" class="label">Breathing meditation</text>
+    <text x="42" y="267" class="body">Completed / 70 active seconds</text>
+    <text x="42" y="298" class="small muted">Optional feedback: skipped</text>
+    <rect x="24" y="342" width="364" height="119" rx="13" fill="#f0eee4"/>
+    <text x="42" y="374" class="label">Notice your surroundings</text>
+    <text x="42" y="406" class="body">Ended early / step 3 of 5</text>
+    <text x="42" y="437" class="small muted">View actual progress / delete record</text>
+    <text x="24" y="508" class="label">Saved conversation</text>
+    <text x="24" y="539" class="body muted">Fictional exam scenario</text>
+    <text x="24" y="567" class="small">Open messages</text>
+    <rect x="24" y="596" width="364" height="38" rx="8" fill="#245649"/>
+    <text x="122" y="621" class="small white">Choose a practice</text>
+  </g>
+  <text x="44" y="838" class="label">KEY STATES TO DESIGN</text>
+  <text x="44" y="867" class="body muted">Paused / interrupted / model unavailable / save failed / empty history / support panel</text>
+  <text x="44" y="903" class="small muted">The exercise sequence is fixed in the app. Chat happens before or after it. No recorded outcomes are claimed here.</text>
+</svg>
