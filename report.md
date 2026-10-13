@@ -6,7 +6,7 @@ Project: Still, a proposed local meditation-skills prototype.
 
 Repository URL: https://github.com/treyfoerster41-creator/Assignment-3
 
-Assignment 3.1 design checkpoint commit: to be recorded after the reviewed checkpoint is created.
+Assignment 3.1 design checkpoint commit: `30e4698e84aa4859c7d1e656f3a30026ba17e750`.
 
 Milestone: Assignment 3.1 Research and Design, due October 15, 2026, at 11:59 PM Eastern.
 

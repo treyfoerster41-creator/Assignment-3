@@ -22,11 +22,11 @@ Updated October 13, 2026.
 
 ## What remains incomplete
 
-- The local `main` Git repository exists; its GitHub `origin` remote and first checkpoint commit are being finalized.
+- The local `main` Git repository has the reviewed Assignment 3.1 checkpoint commit `30e4698e84aa4859c7d1e656f3a30026ba17e750`; the report now records this exact ID. The `origin` remote is set, and pushing is the remaining Git step.
 - No Canvas upload has been made or claimed.
 - Final grounding pace, optional-sense skip semantics, phrase-routing rule, and exact Gemini model ID need decisions before implementation.
-- The report's repository URL and exact commit must be filled after the remote and reviewed checkpoint exist.
+- The report contains the repository URL and exact design checkpoint commit. Canvas upload has not been made or claimed.
 
 ## Next task
 
-Finish the reviewed Assignment 3.1 checkpoint: connect `origin`, commit and push the design package, record the exact checkpoint commit ID in `report.md`, then stop at Assignment 3.1. Do not build the app as part of this checkpoint.
+Push the reviewed Assignment 3.1 design package to `origin/main`, verify the remote commit, and stop at Assignment 3.1. Do not build the app as part of this checkpoint.

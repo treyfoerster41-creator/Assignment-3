@@ -25,7 +25,7 @@ The current design supports two short practices: paced breathing (inhale for fou
 | `handoffs/current.md` | Truthful project state and next task | Current handoff |
 | `AGENTS.md` | Project-specific implementation and safety rules | Active instructions |
 | `AI-USE.md` | AI tools and their roles | Disclosure record |
-| `report.md` | Part 1 Canvas submission | Reviewed draft; repository is set and checkpoint commit ID will be recorded after the first commit |
+| `report.md` | Part 1 Canvas submission | Reviewed report; repository URL and exact design checkpoint commit are recorded |
 
 ## Running the project
 
