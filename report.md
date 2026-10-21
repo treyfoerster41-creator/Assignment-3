@@ -6,9 +6,9 @@ I built **Still**, a local coursework prototype for a short breathing meditation
 
 Repository: [Assignment-3 on GitHub](https://github.com/treyfoerster41-creator/Assignment-3)
 
-Part 2 implementation commit: **Will be added after the implementation commit is pushed.**
+Part 2 implementation commit: [d1b24d8a87a2b12c04a56f3fc3f261eaf55d1608](https://github.com/treyfoerster41-creator/Assignment-3/commit/d1b24d8a87a2b12c04a56f3fc3f261eaf55d1608)
 
-I kept my Assignment 3.1 design report in the [Part 1 archive](https://github.com/treyfoerster41-creator/Assignment-3/blob/main/docs/assignment-3-part-1-report-archive.md). This report is for Part 2; I have not uploaded it to Canvas.
+I kept my Assignment 3.1 design report in the [Part 1 archive](https://github.com/treyfoerster41-creator/Assignment-3/blob/d1b24d8a87a2b12c04a56f3fc3f261eaf55d1608/docs/assignment-3-part-1-report-archive.md). This report is for Part 2; I have not uploaded it to Canvas.
 
 ## What I built
 
@@ -40,11 +40,11 @@ I cannot confirm from my browser checks that the optional spoken cues were audib
 
 ## Project files and evidence
 
-- [Application design and research mapping](https://github.com/treyfoerster41-creator/Assignment-3/blob/main/docs/application-design.md)
-- [Verification evidence log](https://github.com/treyfoerster41-creator/Assignment-3/blob/main/evidence/evidence-log.md)
-- [AI-use disclosure](https://github.com/treyfoerster41-creator/Assignment-3/blob/main/AI-USE.md)
-- [Run instructions](https://github.com/treyfoerster41-creator/Assignment-3/blob/main/README.md)
-- [Curated Part 2 prompt and revision record](https://github.com/treyfoerster41-creator/Assignment-3/blob/main/prompts/002-assignment3-part2-implementation.md)
+- [Application design and research mapping](https://github.com/treyfoerster41-creator/Assignment-3/blob/d1b24d8a87a2b12c04a56f3fc3f261eaf55d1608/docs/application-design.md)
+- [Verification evidence log](https://github.com/treyfoerster41-creator/Assignment-3/blob/d1b24d8a87a2b12c04a56f3fc3f261eaf55d1608/evidence/evidence-log.md)
+- [AI-use disclosure](https://github.com/treyfoerster41-creator/Assignment-3/blob/d1b24d8a87a2b12c04a56f3fc3f261eaf55d1608/AI-USE.md)
+- [Run instructions](https://github.com/treyfoerster41-creator/Assignment-3/blob/d1b24d8a87a2b12c04a56f3fc3f261eaf55d1608/README.md)
+- [Curated Part 2 prompt and revision record](https://github.com/treyfoerster41-creator/Assignment-3/blob/d1b24d8a87a2b12c04a56f3fc3f261eaf55d1608/prompts/002-assignment3-part2-implementation.md)
 
 I have not made a Part 2 recording or uploaded this report to Canvas. The later integration/evaluation milestone includes the broader scenario evaluation and demonstration/process recording.
 
