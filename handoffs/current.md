@@ -1,32 +1,28 @@
-# Current handoff - Assignment 3.1
+# Current handoff — Assignment 3.2
 
-Updated October 13, 2026.
+Updated October 21, 2026.
 
-## What exists
+## Current state
 
-- This separate project folder at `/Users/treyfoerster/IST 402/Assignment 3`.
-- `README.md`, `AGENTS.md`, `AI-USE.md`, and a first-person draft `report.md`.
-- `docs/application-design.md` with the supplied R1-R4/D1-D6 findings, proposed flows, technical/data plan, interface research, and open decisions.
-- `docs/early-mockup.svg`, a static three-screen draft. It is not a working UI.
-- Planned frontend/backend directories with README placeholders.
-- A curated prompt record and evidence log.
+- The Part 1 research/design report is preserved at `docs/assignment-3-part-1-report-archive.md`.
+- Part 2 implements a single fixed four-in/six-out breathing sequence, optional fictional reflection, local SQLite history, and an independent Crisis support panel. The sequence takes one start tap and then advances automatically; pause, resume, end, and Crisis support remain available without requiring interaction. Optional spoken inhale/exhale cues are off by default and leave visual prompts available.
+- The optional reflection is in mock mode. No `GEMINI_API_KEY` is configured for this project, and no live model request was made.
+- The ignored local database contains one fictional mock conversation and three browser sessions (two completed, one ended early). The original demo records were retained after refresh and backend restart; the optional voice check added a second completed practice.
+- Backend unit tests (8) and the frontend production build pass after the final code changes. Local browser evidence is in `evidence/evidence-log.md`. Speech output has not yet been personally heard/accepted by the student.
+- Current branch is `main`; Part 2 has not been committed or pushed. Root `report.md` is a draft with the submitted commit pending.
+- Local development servers were left running for student review: frontend `http://127.0.0.1:5173/`, API `http://127.0.0.1:8000/`.
 
-## What I checked
+## What has not been claimed
 
-- The student reports reviewing the Part 1 files in VS Code and accepting them for the checkpoint.
-- The GitHub repository `https://github.com/treyfoerster41-creator/Assignment-3` is reachable and currently has no remote branches.
-- Read the supplied Assignment 3 overview, the student's scope preference, and the supplied milestone and R/D-table screenshots.
-- Checked the public Calm, Headspace, MDN reduced-motion, and 988 pages with Codex browsing on October 13, 2026. Findings and links are in the design note.
-- `xmllint --noout docs/early-mockup.svg` passed after the mockup was moved into this folder. This checks SVG/XML well-formedness only, not the visual layout or browser behavior.
-- No application tests, build, server run, browser exercise, database inspection, or live model request has occurred for Assignment 3.
+- No student VS Code review, browser acceptance, or database-GUI inspection has occurred for Part 2.
+- No live Gemini response, formal accessibility audit, screen recording, commit, push, or Canvas upload has occurred.
+- 5-4-3-2-1 grounding, saved skill preferences, and personalization from prior sessions are not implemented.
 
-## What remains incomplete
+## What the student needs to do next
 
-- The reviewed design checkpoint `30e4698e84aa4859c7d1e656f3a30026ba17e750` and report/handoff follow-up are pushed to GitHub `main`. The latest report/handoff commit is `497b8bdb88b1c6ae011bd38f8959848f291ee44b`.
-- No Canvas upload has been made or claimed.
-- Final grounding pace, optional-sense skip semantics, phrase-routing rule, and exact Gemini model ID need decisions before implementation.
-- The report contains the repository URL and exact design checkpoint commit. Canvas upload has not been made or claimed.
+1. Inspect the changed source and report in VS Code. Read `AGENTS.md`, `README.md`, `report.md`, the design update, evidence log, and AI-use disclosure.
+2. Open the local app in a browser and personally accept or request changes. Check that one tap starts the breathing practice and no interaction is needed during the 60-second sequence; enable Spoken cues and listen for inhale/exhale prompts, check visual cues remain, test the Motion switch changes immediately, and test pause/end and persistent Crisis support as desired.
+3. If a live model check is wanted, add a backend-only `GEMINI_API_KEY` to the ignored project-root `.env` locally; do not send the key in chat or put it in the frontend. Otherwise, mock mode is ready for review.
+4. After approval, create the Part 2 commit and push, update `report.md` with the exact commit and repository links, then upload `report.md` to Canvas.
 
-## Next task
-
-The Assignment 3.1 documentation checkpoint is complete and pushed. The next project task is to wait for the Assignment 3.2 scope/instructions; do not build beyond the current checkpoint until requested.
+Part 3 remains a separate milestone for the broader fictional scenario evaluation, additional behavior checks, and demonstration/process recording required by the course overview.
