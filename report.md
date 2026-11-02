@@ -6,7 +6,7 @@
 
 I built **Still**, a local coursework prototype with five short, fixed meditation options. The first two are the course skills; the last three are brief options I wrote for this app after I asked to expand it. The repository is [Assignment-3 on GitHub](https://github.com/treyfoerster41-creator/Assignment-3). My Part 1 and Part 2 reports are preserved in [`docs/assignment-3-part-1-report-archive.md`](docs/assignment-3-part-1-report-archive.md) and [`docs/assignment-3-part-2-report-archive.md`](docs/assignment-3-part-2-report-archive.md).
 
-**Submitted Part 3 commit:** Pending student review and a final commit. I have not committed or pushed these Part 3 changes, so I cannot provide a submitted commit link yet.
+**Part 3 implementation commit:** `fe8cde9f1633261c9741b2d2ab609e3ad46ae1b7`. This is the reviewed implementation snapshot for this draft. I have not pushed it, and the demo and process recording links are still pending.
 
 ## What I built
 
