@@ -594,7 +594,17 @@ async function sendMessage() {
   sendingMessage.value = true
   latestReply.value = null
   try {
-    const response = await api.sendMessage(messageDraft.value.trim(), conversationId.value, selectedProfileId.value)
+    let response
+    try {
+      response = await api.sendMessage(messageDraft.value.trim(), conversationId.value, selectedProfileId.value)
+    } catch (exception) {
+      // A cleared/recreated local database can leave an obsolete conversation ID in this browser.
+      // The API rejects it before saving or forwarding the message, so start a fresh thread once.
+      if (exception.message !== 'Conversation not found.') throw exception
+      conversationId.value = null
+      localStorage.removeItem(conversationStorageKey())
+      response = await api.sendMessage(messageDraft.value.trim(), null, selectedProfileId.value)
+    }
     conversationId.value = response.conversation_id
     localStorage.setItem(conversationStorageKey(), response.conversation_id)
     messageDraft.value = ''
@@ -758,10 +768,6 @@ onBeforeUnmount(() => {
             <div><strong>Spoken cues</strong><span>{{ speechSupported ? 'Optional, upbeat prompts; voice style depends on your device.' : 'Not supported here; visual cues remain available.' }}</span></div>
             <button class="switch-button" :aria-pressed="spokenCues" :disabled="!speechSupported" @click="toggleSpeech">{{ spokenCues ? 'Voice on' : 'Voice off' }}</button>
           </div>
-          <div class="model-status">
-            <span class="status-dot" :class="appInfo?.model_mode === 'live' ? 'live' : 'mock'"></span>
-            <span>{{ !appInfo ? 'Model status unavailable' : appInfo.model_mode === 'live' ? latestReply?.source === 'fallback' ? 'Gemini key found · local fallback used' : `Gemini key found · ${appInfo.model_id}` : 'Demo reply mode · no live model key configured' }}</span>
-          </div>
         </div>
 
         <section class="reflection-card" aria-labelledby="reflection-title">
@@ -769,10 +775,10 @@ onBeforeUnmount(() => {
             <div><p class="eyebrow">Optional · fictional examples only</p><h2 id="reflection-title">Chat and find a short practice</h2></div>
             <span class="reflection-symbol" aria-hidden="true">↗</span>
           </div>
-          <p class="reflection-description">Share a fictional situation or ask for an option. Still can keep your goal in view and show one of five fixed suggestions here. You choose whether to start it.</p>
+          <p class="reflection-description">Optional chat uses Google’s Gemini API when available. Still keeps all five practice scripts fixed, and you choose whether to start one.</p>
           <div v-if="currentConversationMessages.length" class="chat-thread" aria-label="Current conversation" aria-live="polite">
             <article v-for="message in currentConversationMessages" :key="message.id" class="chat-message" :class="`chat-${message.role}`">
-              <span>{{ message.role === 'user' ? 'You' : message.source === 'gemini' ? 'Still · Gemini' : message.source === 'mock' ? 'Still · demo' : 'Still' }}</span>
+              <span>{{ message.role === 'user' ? 'You' : 'Still' }}</span>
               <p>{{ message.text }}</p>
             </article>
           </div>
@@ -782,7 +788,7 @@ onBeforeUnmount(() => {
             <span>{{ messageDraft.length }}/500 characters</span>
             <button class="secondary-button" :disabled="sendingMessage || !messageDraft.trim()" @click="sendMessage">{{ sendingMessage ? 'Thinking…' : 'Send message' }}</button>
           </div>
-          <div v-if="latestReply" class="model-reply" :class="`reply-${latestReply.source}`" role="status">
+          <div v-if="latestReply?.notice" class="model-reply" :class="`reply-${latestReply.source}`" role="status">
             <p>{{ latestReply.notice }}</p>
           </div>
           <article v-if="currentRecommendation" class="recommendation-card chat-recommendation">
@@ -790,10 +796,8 @@ onBeforeUnmount(() => {
               <p class="eyebrow">One optional suggestion from this chat and saved activity</p>
               <h2>{{ currentRecommendation.shortName || currentRecommendation.short_name }}</h2>
               <p>{{ currentRecommendation.description }}</p>
-              <small v-if="currentRecommendation.saved_to_profile && activeProfile">Saved to {{ activeProfile.display_name }}’s profile · {{ currentRecommendation.source === 'gemini' ? 'Gemini' : currentRecommendation.source === 'fallback' ? 'local fallback rules' : 'demo rules' }}</small>
-              <small v-else-if="currentRecommendation.source === 'fallback'">Local rule-based option; Gemini was unavailable.</small>
-              <small v-else-if="currentRecommendation.source === 'gemini'">Not saved to a profile. Choose one in Profile to save future suggestions.</small>
-              <small v-else>Preset demo suggestion; no live Gemini call was made.</small>
+              <small v-if="currentRecommendation.saved_to_profile && activeProfile">Saved to {{ activeProfile.display_name }}’s profile.</small>
+              <small v-else>Not saved to a profile. Choose one in Profile to save future suggestions.</small>
             </div>
             <button class="primary-button" @click="startRecommendedExercise">Try suggestion <span aria-hidden="true">→</span></button>
           </article>
@@ -801,7 +805,7 @@ onBeforeUnmount(() => {
 
         <div class="design-note">
           <span class="note-mark" aria-hidden="true">i</span>
-          <p>The model may select only one of the five fixed practice IDs. The app owns every step and timer. Chat cannot start, pause, or stop a practice; you choose its button when you are ready.</p>
+          <p>Still can suggest only one of the five fixed practices. Every step and timer is part of the app. Chat cannot start, pause, or end a practice; you choose its button when you are ready.</p>
         </div>
       </section>
 
@@ -871,7 +875,7 @@ onBeforeUnmount(() => {
             <div class="profile-recommendations">
               <h3>Saved recommendations <span>{{ profile.recommendations.length }}</span></h3>
               <p v-if="!profile.recommendations.length" class="profile-empty">Recommendations from a selected-profile chat will appear here.</p>
-              <ul v-else><li v-for="item in profile.recommendations" :key="item.id"><span>{{ exerciseFor(item.exercise_id).name }}</span><small>{{ item.source === 'gemini' ? 'Gemini' : item.source === 'fallback' ? 'Local fallback rules' : 'Demo rules' }} · {{ formatDate(item.created_at) }}</small></li></ul>
+              <ul v-else><li v-for="item in profile.recommendations" :key="item.id"><span>{{ exerciseFor(item.exercise_id).name }}</span><small>{{ formatDate(item.created_at) }}</small></li></ul>
             </div>
             <button class="secondary-button" :aria-pressed="selectedProfileId === profile.id" @click="switchProfile(profile.id)">{{ selectedProfileId === profile.id ? 'Selected for this device' : `Use ${profile.display_name}` }}</button>
           </article>
@@ -902,7 +906,7 @@ onBeforeUnmount(() => {
               <div class="history-card-top"><strong>Exercise suggestion chat</strong><span>{{ formatDate(thread.updated_at) }}</span></div>
               <p v-if="thread.profile_name" class="thread-profile">Profile: {{ thread.profile_name }}</p>
               <div v-for="message in history.messages.filter((row) => row.conversation_id === thread.id)" :key="message.id" class="message-row" :class="`message-${message.role}`">
-                <span class="message-role">{{ message.role === 'user' ? 'You' : message.source === 'gemini' ? 'Gemini' : message.source === 'mock' ? 'Demo' : message.source === 'fixed' ? 'Still' : 'Fallback' }}</span><p>{{ message.text }}</p>
+                <span class="message-role">{{ message.role === 'user' ? 'You' : 'Still' }}</span><p>{{ message.text }}</p>
               </div>
             </article>
           </section>

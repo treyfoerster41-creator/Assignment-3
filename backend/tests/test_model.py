@@ -100,15 +100,14 @@ class GeminiTransportTests(unittest.IsolatedAsyncioTestCase):
         with patch("app.model.model_configuration", return_value=("test-only-key", "gemini-3.6-flash")), \
              patch("app.model.httpx.AsyncClient", return_value=client):
             result = await model.generate_recommendation(
-                "A fictional request.", [], {"preferred_exercise_id": None}
+                "A fictional student asks for a short practice.", [], {"preferred_exercise_id": None}
             )
 
         self.assertEqual(result["source"], "fallback")
         self.assertEqual(result["exercise_id"], BREATHING_ID)
         self.assertEqual(result["recommendation_source"], "fallback")
-        self.assertIn("Gemini isn't responding", result["reply"])
-        self.assertIn("local rules", result["reply"])
-        self.assertIn("not a live Gemini choice", result["reply"])
+        self.assertIn("one short option below", result["reply"])
+        self.assertNotIn("Gemini", result["reply"])
 
     async def test_truncated_gemini_output_uses_fixed_local_recommendation(self) -> None:
         def handle(_request: httpx.Request) -> httpx.Response:
@@ -123,12 +122,13 @@ class GeminiTransportTests(unittest.IsolatedAsyncioTestCase):
         with patch("app.model.model_configuration", return_value=("test-only-key", "gemini-3.6-flash")), \
              patch("app.model.httpx.AsyncClient", return_value=client):
             result = await model.generate_recommendation(
-                "A fictional request.", [], {"preferred_exercise_id": None}
+                "A fictional student asks for a short practice.", [], {"preferred_exercise_id": None}
             )
 
         self.assertEqual(result["source"], "fallback")
         self.assertEqual(result["exercise_id"], BREATHING_ID)
-        self.assertIn("Gemini isn't responding", result["reply"])
+        self.assertNotIn("Gemini", result["reply"])
+        self.assertIn("one short option below", result["reply"])
 
     async def test_model_failure_carries_pause_goal_through_side_topic_into_local_option(self) -> None:
         history = [
@@ -146,17 +146,20 @@ class GeminiTransportTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("wanting a pause", result["reply"])
         self.assertEqual(result["recommendation_source"], "fallback")
 
-    async def test_greeting_in_local_demo_gets_a_conversational_fixed_suggestion(self) -> None:
+    async def test_greeting_in_local_demo_starts_conversation_without_suggestion(self) -> None:
         with patch("app.model.model_configuration", return_value=(None, "gemini-3.6-flash")):
             result = await model.generate_recommendation(
                 "Hi!", [], {"preferred_exercise_id": None}
             )
 
         self.assertEqual(result["source"], "mock")
-        self.assertEqual(result["exercise_id"], BREATHING_ID)
-        self.assertIn("Hi!", result["reply"])
-        self.assertIn("what would you like to talk about", result["reply"].casefold())
-        self.assertIn("not a live Gemini reply", result["reply"])
+        self.assertIsNone(result["exercise_id"])
+        self.assertTrue(result["reply"].startswith("Hi,"))
+        self.assertEqual(
+            result["reply"],
+            "Hi, I hear that you're looking to de-stress right now, is there anything specific you want to do?",
+        )
+        self.assertNotIn("Gemini", result["reply"])
 
     def test_request_for_something_other_than_breathing_selects_grounding_in_mock(self) -> None:
         result = model._mock_exercise(
@@ -185,13 +188,14 @@ class GeminiTransportTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("since you mentioned wanting to de-stress", reply.casefold())
         self.assertIn("option below", reply.casefold())
 
-    def test_greeting_provider_fallback_starts_a_conversation_without_a_recommendation(self) -> None:
+    def test_greeting_fallback_starts_a_conversation_without_provider_diagnostics(self) -> None:
         reply = model.fallback_reply("Hi!")
 
-        self.assertIn("Hi!", reply)
-        self.assertIn("What would you like to talk about", reply)
-        self.assertIn("Gemini isn't responding right now", reply)
-        self.assertIn("choose from the five fixed options", reply)
+        self.assertEqual(
+            reply,
+            "Hi, I hear that you're looking to de-stress right now, is there anything specific you want to do?",
+        )
+        self.assertNotIn("Gemini", reply)
 
 
 if __name__ == "__main__":

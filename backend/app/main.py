@@ -509,13 +509,7 @@ def create_app(
             "notice": (
                 "The app limited that reply. It can suggest only its five fixed practices and cannot start one; you choose whether to use the practice button."
                 if reply_constrained
-                else f"Live Gemini response from {model.model_configuration()[1]}."
-                if source == "gemini"
-                else "Preset demo response and rule-based suggestion; no live model was called."
-                if source == "mock"
-                else "Gemini could not be reached. The option below is selected by Still's local rules from its fixed practices, not by a live Gemini reply. You choose whether to use it."
-                if source == "fallback" and recommendation is not None
-                else "The live model could not be reached; no exercise was saved as a recommendation."
+                else ""
             ),
         }
 

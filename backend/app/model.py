@@ -57,6 +57,7 @@ _CONTACT_HINTS = (
 )
 _BREATHING_HINTS = (
     "breathing", "breathe", "breath", "paced breathing", "4-in/6-out", "four-in, six-out",
+    "one-minute option", "one minute option", "quiet one-minute option",
 )
 _START_VERBS = re.compile(
     r"\b(?:start(?:s|ed|ing)?|begin(?:s|ning|began|begun)?|launch(?:es|ed|ing)?|initiat(?:e|es|ed|ing))\b",
@@ -116,20 +117,44 @@ def model_configuration() -> tuple[str | None, str]:
     return key, model
 
 
+def scripted_demo_enabled() -> bool:
+    """Enable the two-turn local presentation flow without calling a provider."""
+    load_project_env()
+    return os.getenv("STILL_SCRIPTED_DEMO", "").strip().casefold() in {"1", "true", "yes", "on"}
+
+
+def _scripted_demo_reply(message: str) -> dict[str, Any]:
+    normalized = re.sub(r"[^a-z ]+", " ", message.casefold()).strip()
+    if normalized in {"hi", "hello", "hey", "hiya"}:
+        return {
+            "reply": "Hi, I hear that you're looking to de-stress right now, is there anything specific you want to do?",
+            "exercise_id": None,
+            "source": "mock",
+        }
+    if (
+        any(term in normalized for term in ("practice", "exercise", "relax", "sit back", "de stress", "destress"))
+        and any(term in normalized for term in ("practice", "exercise", "relax", "sit back", "do", "recommend", "suggest"))
+    ):
+        return {
+            "reply": "Sure. I can suggest one of the short practices below. You can try it, choose another, or skip it.",
+            "exercise_id": VISUAL_ANCHOR_ID,
+            "source": "mock",
+        }
+    return {
+        "reply": "I hear you. What kind of pause would feel useful right now: quiet, sensory, or focused on breathing?",
+        "exercise_id": None,
+        "source": "mock",
+    }
+
+
 def fallback_reply(message: str) -> str:
-    """Keep provider failures conversational while clearly stating that no suggestion was made."""
+    """Provide a calm, nontechnical reply when no conversational reply is available."""
     normalized = re.sub(r"[^a-z ]+", " ", message.casefold()).strip()
     if _START_VERBS.search(message) and _START_TARGETS.search(message):
         return START_CONTROL_REPLY
     if normalized in {"hi", "hello", "hey", "hiya", "good morning", "good afternoon", "good evening"}:
-        return (
-            "Hi! What would you like to talk about in this fictional example? "
-            "Gemini isn't responding right now, so there is no chat-based suggestion yet; you can choose from the five fixed options below."
-        )
-    return (
-        "Thanks for sharing that fictional example. Gemini isn't responding right now, "
-        "so there is no chat-based suggestion yet. You can send another fictional message or choose from the five fixed practices below."
-    )
+        return "Hi, I hear that you're looking to de-stress right now, is there anything specific you want to do?"
+    return "I hear you. What kind of pause would feel useful right now: quiet, sensory, or focused on breathing?"
 
 
 def _recent_user_context(history: list[dict[str, str]]) -> str:
@@ -146,21 +171,48 @@ def _has_pause_goal(text: str) -> bool:
     ))
 
 
+def _is_greeting(text: str) -> bool:
+    normalized = re.sub(r"[^a-z ]+", " ", text.casefold()).strip()
+    return normalized in {"hi", "hello", "hey", "hiya", "good morning", "good afternoon", "good evening"}
+
+
+def _requests_practice(text: str) -> bool:
+    normalized = re.sub(r"[^a-z ]+", " ", text.casefold()).strip()
+    return any(term in normalized for term in (
+        "practice", "exercise", "suggest", "recommend", "what can i do", "what could i do",
+        "something i can do", "anything i can do", "help me destress", "help me relax", "option",
+    ))
+
+
+def _should_offer_practice(message: str, history: list[dict[str, str]] | None = None) -> bool:
+    if _is_greeting(message):
+        return False
+    direct_skill_signal = any(
+        hint in message.casefold()
+        for hint in (*_GROUNDING_HINTS, *_VISUAL_HINTS, *_SOUND_HINTS, *_CONTACT_HINTS, *_BREATHING_HINTS)
+    )
+    return (
+        _requests_practice(message)
+        or _has_pause_goal(message)
+        or _has_pause_goal(_recent_user_context(history or []))
+        or direct_skill_signal
+    )
+
+
 def _mock_reply(message: str, history: list[dict[str, str]] | None = None) -> str:
     """Keep the no-key demo conversational and gently return to a stated goal."""
     normalized = re.sub(r"[^a-z ]+", " ", message.casefold()).strip()
     recent_goal = _has_pause_goal(_recent_user_context(history or []))
-    prefix = "This is a preset demo response, not a live Gemini reply. "
     if normalized in {"hi", "hello", "hey", "hiya", "good morning", "good afternoon", "good evening"}:
         if recent_goal:
-            return f"{prefix}Hi again. Since you mentioned wanting a short pause, I’ve left one optional app suggestion just below."
-        return f"{prefix}Hi! What would you like to talk about in this fictional example?"
+            return "Hi again. Since you mentioned wanting a short pause, I’ve left one optional app suggestion just below."
+        return "Hi, I hear that you're looking to de-stress right now, is there anything specific you want to do?"
     if _has_pause_goal(message) or any(term in normalized for term in ("exercise", "practice", "suggestion", "recommend")):
-        return f"{prefix}I’ve picked one short app option below based on what you said. You can try it, choose another, or skip it."
+        return "I’ve picked one short app option below based on what you said. You can try it, choose another, or skip it."
     if recent_goal:
-        return f"{prefix}That sounds like something you enjoy. Since you mentioned wanting to de-stress, I’ve left one short option below if you want it."
+        return "That sounds like something you enjoy. Since you mentioned wanting to de-stress, I’ve left one short option below if you want it."
     return (
-        f"{prefix}Thanks for sharing that fictional example. What would you like to talk about next?"
+        "Thanks for sharing that fictional example. What would you like to talk about next?"
     )
 
 
@@ -168,17 +220,23 @@ def _local_fallback_reply(
     message: str,
     history: list[dict[str, str]] | None = None,
 ) -> str:
-    """Explain that a fixed app rule, rather than Gemini, selected the fallback option."""
-    context = f"{_recent_user_context(history or [])} {message}"
-    if _has_pause_goal(context):
-        return (
-            "I remember you mentioned wanting a pause. Gemini isn't responding, so the option below "
-            "comes from Still's local rules and fixed practice list, not a live Gemini choice."
-        )
-    return (
-        "Gemini isn't responding, so the option below comes from Still's local rules and fixed "
-        "practice list, not a live Gemini choice. You can try it or skip it."
-    )
+    """Keep a local fixed-practice suggestion warm and free of provider diagnostics."""
+    if _is_greeting(message):
+        return fallback_reply(message)
+    if (
+        _has_pause_goal(_recent_user_context(history or []))
+        and not _has_pause_goal(message)
+        and not _requests_practice(message)
+    ):
+        return "That sounds like something you enjoy. Since you mentioned wanting a pause, one optional practice is below if you want it."
+    if _should_offer_practice(message, history):
+        normalized = message.casefold()
+        if any(term in normalized for term in ("sit back", "relax", "low effort", "unwind")):
+            return "Sure. I’ve picked a quiet, low-effort option below. You can try it, choose another, or skip it."
+        return "Sure. I’ve picked one short option below that fits what you asked for. You can try it, choose another, or skip it."
+    if _has_pause_goal(_recent_user_context(history or [])):
+        return "That sounds like something you enjoy. Since you mentioned wanting to de-stress, one optional practice is below if you want it."
+    return "I hear you. Would a short practice or more conversation feel helpful?"
 
 
 def ensure_goal_bridge(
@@ -244,8 +302,19 @@ def _mock_exercise(
         return CONTACT_POINTS_ID
     if any(hint in normalized for hint in _BREATHING_HINTS) and not breath_is_negated:
         return BREATHING_ID
+    if _requests_practice(message) and any(term in normalized for term in ("sit back", "relax", "unwind")):
+        return VISUAL_ANCHOR_ID
     if _has_pause_goal(full_context) and any(term in full_context for term in ("fortnite", "gaming", "game", "match", "one piece")):
         return VISUAL_ANCHOR_ID
+    if _requests_practice(message) or _has_pause_goal(full_context):
+        preferred = profile_context.get("preferred_exercise_id")
+        recent_ids = profile_context.get("recent_recommendation_ids") or []
+        used_ids = profile_context.get("recently_used_exercise_ids") or []
+        last_id = next((item for item in [*recent_ids, *used_ids, preferred] if item in EXERCISES), None)
+        options = (VISUAL_ANCHOR_ID, GROUNDING_ID, SOUND_NOTICING_ID, CONTACT_POINTS_ID, BREATHING_ID)
+        if last_id in options:
+            return options[(options.index(last_id) + 1) % len(options)]
+        return BREATHING_ID
     preferred = profile_context.get("preferred_exercise_id")
     if preferred in EXERCISES:
         return preferred
@@ -305,7 +374,9 @@ async def request_gemini_recommendation(
             # Gemini 3.x can spend part of the token limit on internal thinking.
             # Leave enough room for the short structured reply to finish.
             "maxOutputTokens": 512,
-            "thinkingConfig": {"thinkingLevel": "LOW"},
+            "thinkingConfig": {
+                "thinkingLevel": "MINIMAL" if model_id == "gemini-3.5-flash-lite" else "LOW"
+            },
             "responseFormat": {
                 "text": {
                     "mimeType": "APPLICATION_JSON",
@@ -315,7 +386,8 @@ async def request_gemini_recommendation(
         },
     }
     endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model_id}:generateContent"
-    timeout = httpx.Timeout(12.0, connect=4.0)
+    response_timeout = 20.0 if model_id == "gemini-3.5-flash-lite" else 12.0
+    timeout = httpx.Timeout(response_timeout, connect=4.0)
     async with httpx.AsyncClient(timeout=timeout) as client:
         response = None
         for attempt in range(2):
@@ -359,9 +431,11 @@ async def generate_recommendation(
     history: list[dict[str, str]],
     profile_context: dict[str, Any],
 ) -> dict[str, Any]:
+    if scripted_demo_enabled():
+        return _scripted_demo_reply(message)
     api_key, _model_id = model_configuration()
     if not api_key:
-        exercise_id = _mock_exercise(message, profile_context, history)
+        exercise_id = _mock_exercise(message, profile_context, history) if _should_offer_practice(message, history) else None
         return {
             "reply": _mock_reply(message, history),
             "exercise_id": exercise_id,
@@ -369,12 +443,21 @@ async def generate_recommendation(
         }
     try:
         result = await request_gemini_recommendation(message, history, profile_context)
+        if _should_offer_practice(message, history):
+            # Keep the model's conversational wording, but make direct exercise
+            # intent and variety reliable even when the model repeats a saved
+            # favorite. Explicit skill requests still win in _mock_exercise.
+            result["exercise_id"] = _mock_exercise(message, profile_context, history)
+        else:
+            # Do not turn a greeting or unrelated side topic into an unsolicited card.
+            result["exercise_id"] = None
         return {**result, "source": "gemini"}
     except Exception:
         # Provider errors, request URLs, and response bodies can expose sensitive data.
+        offer_practice = _should_offer_practice(message, history)
         return {
             "reply": _local_fallback_reply(message, history),
-            "exercise_id": _mock_exercise(message, profile_context, history),
+            "exercise_id": _mock_exercise(message, profile_context, history) if offer_practice else None,
             "source": "fallback",
             "recommendation_source": "fallback",
         }

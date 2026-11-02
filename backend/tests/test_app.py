@@ -329,10 +329,10 @@ class StillApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((await client.get("/api/profiles")).json()["profiles"][0]["recommendations"], [])
         await client.aclose()
 
-    async def test_gemini_failure_can_save_a_transparent_fixed_local_fallback(self) -> None:
+    async def test_gemini_failure_can_save_a_fixed_option_without_provider_diagnostics(self) -> None:
         async def locally_selected_fallback(_message, _history, _profile_context):
             return {
-                "reply": "Gemini isn't responding. This option is selected by local rules, not a live Gemini choice.",
+                "reply": "I've put one short option below if you want to try it; you can skip it or choose another.",
                 "exercise_id": VISUAL_ANCHOR_ID,
                 "source": "fallback",
                 "recommendation_source": "fallback",
@@ -351,7 +351,8 @@ class StillApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result["source"], "fallback")
         self.assertEqual(result["recommendation"]["id"], VISUAL_ANCHOR_ID)
         self.assertEqual(result["recommendation"]["source"], "fallback")
-        self.assertIn("local rules", result["notice"])
+        self.assertEqual(result["notice"], "")
+        self.assertNotIn("Gemini", result["reply"])
         saved_profile = (await client.get("/api/profiles")).json()["profiles"][0]
         self.assertEqual(saved_profile["recommendations"][0]["source"], "fallback")
         self.assertEqual((await client.get("/api/history")).json()["sessions"], [])
@@ -474,7 +475,8 @@ class Assignment3Part3ScenarioTests(unittest.IsolatedAsyncioTestCase):
                     self.assertEqual(result["source"], "mock", case["id"])
                     self.assertEqual(result["recommendation"]["id"], case["expected_exercise_id"], case["id"])
                     self.assertTrue(result["recommendation"]["saved_to_profile"], case["id"])
-                    self.assertIn("preset demo response", result["reply"], case["id"])
+                    self.assertNotIn("Gemini", result["reply"], case["id"])
+                    self.assertNotIn("demo response", result["reply"].casefold(), case["id"])
                     observed.append(case["id"])
                 history = (await client.get("/api/history")).json()
                 self.assertEqual(len(history["recommendations"]), 18)
