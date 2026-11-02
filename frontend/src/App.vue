@@ -354,6 +354,8 @@ async function refreshInfo() {
     for (const exercise of result.exercises || []) {
       const durationSeconds = exercise.duration_seconds
       const isCycles = exercise.kind === 'cycles'
+      const localStepSeconds = EXERCISES[exercise.id]?.stepSeconds
+      const backendStepSeconds = Number(exercise.step_seconds)
       EXERCISES[exercise.id] = {
         ...exercise,
         shortName: exercise.short_name,
@@ -363,6 +365,11 @@ async function refreshInfo() {
         progressLabel: isCycles ? 'cycles' : 'prompts',
         progressCount: isCycles ? exercise.cycle_count : exercise.steps.length,
         cycleMs: isCycles ? (exercise.inhale_seconds + exercise.exhale_seconds) * 1000 : 0,
+        stepSeconds: isCycles ? 0 : (
+          Number.isFinite(backendStepSeconds) && backendStepSeconds > 0
+            ? backendStepSeconds
+            : localStepSeconds || STEP_MS / 1000
+        ),
         steps: exercise.steps || [],
       }
     }
