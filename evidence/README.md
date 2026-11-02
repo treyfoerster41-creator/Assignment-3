@@ -1,5 +1,5 @@
 # Evidence folder
 
-The [evidence log](evidence-log.md) keeps the Assignment 3.1 research/design observations separate from Assignment 3.2 automated checks and Codex-run localhost browser observations. It labels mock behavior, agent checks, and student review accurately.
+The [evidence log](evidence-log.md) preserves the Assignment 3.1 research/design and 3.2 working-app checkpoints, then records Part 3 implementation checks separately. The [Part 3 scenario matrix](assignment-3-part-3-scenarios.md) lists eighteen fictional mock scenarios and three behavior invariants.
 
-No screenshots, recordings, live Gemini results, student VS Code review, student database-GUI observations, or Canvas receipt are included at this draft stage. Do not describe Codex-run checks as student observations. Add any student-provided evidence only after reviewing it for credentials and private information.
+Automated/mock evidence, read-only browser inspection, live Gemini output, and student review remain distinct. An earlier live Gemini response is recorded, but the latest prompt/fallback changes have not been live-checked. Student VS Code acceptance, student database-GUI observation, demo/process recording, and Canvas receipt are still pending. Do not describe Codex-run checks as student observations.

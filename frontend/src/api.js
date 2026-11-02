@@ -20,18 +20,30 @@ async function request(path, options = {}) {
 
 export const api = {
   info: () => request('/api/info'),
-  history: () => request('/api/history'),
-  startSession: (practiceId) => request('/api/sessions', {
+  profiles: () => request('/api/profiles'),
+  createProfile: (displayName) => request('/api/profiles', {
     method: 'POST',
-    body: JSON.stringify({ practice_id: practiceId }),
+    body: JSON.stringify({ display_name: displayName }),
+  }),
+  deleteProfile: (profileId) => request(`/api/profiles/${encodeURIComponent(profileId)}`, {
+    method: 'DELETE',
+  }),
+  history: () => request('/api/history'),
+  startSession: (practiceId, profileId) => request('/api/sessions', {
+    method: 'POST',
+    body: JSON.stringify({ practice_id: practiceId, profile_id: profileId || null }),
   }),
   updateSession: (id, session) => request(`/api/sessions/${encodeURIComponent(id)}`, {
     method: 'PATCH',
     body: JSON.stringify(session),
   }),
-  sendMessage: (message, conversationId) => request('/api/chat', {
+  sendMessage: (message, conversationId, profileId) => request('/api/chat', {
     method: 'POST',
-    body: JSON.stringify({ message, conversation_id: conversationId || null }),
+    body: JSON.stringify({
+      message,
+      conversation_id: conversationId || null,
+      profile_id: profileId || null,
+    }),
   }),
   clearHistory: () => request('/api/history', { method: 'DELETE' }),
 }

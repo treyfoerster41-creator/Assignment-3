@@ -1,35 +1,23 @@
 # Still — Assignment 3
 
-Still is a local coursework prototype for practicing a short, fixed paced-breathing meditation. It is for fictional classroom scenarios only. It is not mental health care, does not diagnose or provide therapy, and does not imply that anyone is monitoring the page.
+Still is a local coursework prototype for five short, fixed meditation options. The first two use the course skills; the other three are small app-authored additions requested for this prototype. It is for fictional classroom scenarios only. It is not mental health care, does not diagnose or provide therapy, and does not imply that anyone is monitoring the page.
 
-## Current state
+## Current state — Assignment 3.3
 
-- Assignment 3.2 working-app scope: one complete 4-in/6-out breathing practice, optional short model reflection, persistent conversation/session history in SQLite, and a standalone Crisis support panel.
-- The exercise contains six four-second inhales and six six-second exhales (60 seconds total). Pause time is excluded; the application never forces completion or exit.
-- One tap starts the practice. The six cycles and visual cues advance automatically, so no screen interaction is required while breathing; pause, end, and Crisis support remain available.
-- Optional spoken inhale/exhale cues are off by default, use browser speech synthesis when supported, and never replace the visible prompt. No microphone is used. The reduced-motion control applies immediately without a reload.
-- Part 1 also proposed 5-4-3-2-1 grounding. That second skill is not implemented or claimed in this milestone.
-- The app runs without credentials using a clearly labeled fixed mock response. Live Gemini requests require a backend-only key in the ignored root `.env`.
-- Design rationale and changes since Part 1 are in [the design note](docs/application-design.md). The [early mockup](docs/early-mockup.svg) remains a static proposal.
-- The current Part 2 submission draft is [report.md](report.md); the Part 1 report is preserved in [the archive](docs/assignment-3-part-1-report-archive.md).
+- **Paced breathing:** six fixed cycles of a four-second inhale and six-second exhale (60 seconds). One tap starts the sequence; cues advance without further interaction.
+- **5-4-3-2-1 sensory grounding:** five fixed prompts, each shown for 15 seconds (75 seconds total). The screen advances automatically; no typing is required.
+- **Three app-authored options:** visual anchor, sound noticing, and support points each use three fixed 15-second prompts. These were added for the prototype; they are not represented as course-provided skills or findings from the supplied study.
+- **Optional conversational suggestion:** the backend sends a bounded fictional chat and limited activity context to Gemini and asks for a short reply plus one of five allowed exercise IDs. The server owns all five scripts. It replaces model text that gives activity advice or claims to start a practice. Only a user-selected app button starts a session.
+- **Clearly marked demo and fallback behavior:** without a Gemini key, the local mock uses fixed rules and labels its reply as a preset. If a live request fails, local rules can still select one of the fixed options; the reply and suggestion card say this was a local fallback, not a live Gemini choice. A configured key does not guarantee provider availability.
+- **Guided conversation:** the chat is prompted to keep a stated goal in view when the conversation wanders, then gently point to the optional exercise card shown immediately below the latest response. The model can choose only one of five fixed IDs and cannot initiate an exercise. The user may try the card, choose another option, or skip it. The earlier live Gemini browser check succeeded before the latest chat changes; the latest prompt/fallback behavior has mock coverage only.
+- **Profiles and history:** a local profile label can retain the last practice the person chose, recommendations, and linked fictional conversations and sessions. The profile label itself is not sent to Gemini. Profiles are local labels, not accounts.
+- **Safety and access:** Pause, End, and Crisis support remain available during practice. Crisis support is bundled in the interface and does not depend on the API or model. Reduced motion keeps the breathing ball at one fixed size. Optional spoken prompts are slightly warmer and encouraging, use browser speech synthesis, and do not use a microphone; the available voice depends on the device.
 
-## Project map
+Gemini's only application role is to offer a short conversational response and select a fixed exercise ID. It cannot create steps, change timing, start an exercise, route a person, write database records, or control Crisis support. A limited explicit phrase rule can open the Crisis panel; it is not a distress detector and may miss or overmatch language.
 
-| Path | Purpose | Current status |
-| --- | --- | --- |
-| `frontend/` | Vue practice, optional reflection, history, and crisis panel | Implemented; build and browser checks are recorded separately |
-| `backend/app/` | FastAPI routes, Gemini adapter, phrase routing, and SQLite persistence | Implemented; automated checks use mocked model responses |
-| `backend/data/still.db` | Local SQLite history | Created automatically and ignored by Git; contains only local demo records |
-| `docs/application-design.md` | Part 1 research plus Part 2 implementation decisions | Updated October 21, 2026 |
-| `docs/early-mockup.svg` | Early interaction sketch | Static design artifact |
-| `prompts/` | Curated project instructions and revisions | Part 1 and Part 2 records |
-| `evidence/` | Expected/observed checks and decisions | Automated and browser observations are kept distinct |
-| `handoffs/current.md` | Truthful project state and next task | Current as of October 21, 2026 |
-| `AGENTS.md` | Project-specific boundaries and safety rules | Active instructions |
-| `AI-USE.md` | AI tools, versions, and roles | Updated for Part 2 |
-| `report.md` | Assignment 3.2 Canvas submission | Draft until student review, exact commit, and remaining observations are recorded |
+Earlier reports remain available: [Assignment 3.1](docs/assignment-3-part-1-report-archive.md) and [Assignment 3.2](docs/assignment-3-part-2-report-archive.md). Root `report.md` is the Part 3 draft.
 
-## Setup
+## Run locally
 
 Use Node.js 20.19+ or 22.12+ and Python 3.10+. From the project root:
 
@@ -42,9 +30,7 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-The frontend uses Vue 3.5.44, Vite 8.3.5, and `@vitejs/plugin-vue` 6.0.10. The backend uses FastAPI 0.156.8, Uvicorn 0.53.0, and HTTPX 0.28.1. `package-lock.json` and `requirements.txt` record the dependency set.
-
-## Run locally
+The frontend uses Vue 3.5.44, Vite 8.3.5, and `@vitejs/plugin-vue` 6.0.10. The backend uses FastAPI 0.156.8, Uvicorn 0.53.0, and HTTPX 0.28.1. Lockfiles and requirements record the installed versions.
 
 Start the backend from `backend/` in one terminal:
 
@@ -53,17 +39,19 @@ source .venv/bin/activate
 uvicorn app.main:app --reload
 ```
 
-Start the Vue interface from `frontend/` in a second terminal:
+Start the frontend from `frontend/` in a second terminal:
 
 ```sh
 npm run dev
 ```
 
-Open <http://127.0.0.1:5173>. The API is at <http://127.0.0.1:8000>. SQLite initializes automatically at `backend/data/still.db`; it is not reseeded and survives app or server restarts.
+Open <http://127.0.0.1:5173>. The backend API is at <http://127.0.0.1:8000>. SQLite initializes at `backend/data/still.db`; the Part 3 migration expands the allowed fixed-exercise and recommendation-source values while preserving existing records.
 
-The app runs without a live model key. To enable Gemini, copy `.env.example` to the project root as `.env` and add a `GEMINI_API_KEY` obtained by the student. The current configured model is `gemini-3.8-flash`. The key stays in the backend and must never be committed or copied into the frontend. When no key exists, the app labels the response as a preset demo response. When a configured request fails, it stores and displays a fixed fallback without exposing provider errors.
+## Optional live Gemini configuration
 
-## Repeatable checks
+The app works in demo mode without a key. To enable live responses, copy `.env.example` to the project root `.env` and set `GEMINI_API_KEY` there. Keep the value backend-only and out of source control, screenshots, recordings, and chat. The current model is `gemini-3.6-flash`; `GEMINI_MODEL` can override it. The backend uses a bounded JSON schema that permits only the five fixed exercise IDs. Model output never creates or changes exercise instructions. If a request fails or its output is invalid, local rules may suggest a fixed option; the app labels that recommendation as a fallback, not a live Gemini choice. Only the user can start the practice.
+
+## Checks
 
 From `backend/`:
 
@@ -77,10 +65,20 @@ From `frontend/`:
 npm run build
 ```
 
-Automated tests use fictional text, a temporary SQLite database, and a mock model provider. They do not establish live Gemini behavior or student manual browser/database review.
+Automated checks use temporary databases, fictional inputs, and mocked transport/model responses; they do not prove live Gemini behavior. A separate single fictional live response was observed in this session, as recorded in [the evidence log](evidence/evidence-log.md). Neither automated nor live checks establish clinical benefit, accessibility conformance, consistent provider availability, or student review.
 
-## Safety and data
+## Key files
 
-The Crisis support control is bundled into every view and does not call FastAPI or Gemini. It links to U.S. 988 call, text, and chat options; external links require internet or a compatible device. A limited phrase rule in the optional chat route may show this same panel, but it is not a distress detector and can miss or overmatch wording. Matched input is not sent to Gemini or saved; history records only that the fixed panel was shown.
+| Path | Purpose |
+| --- | --- |
+| `frontend/src/App.vue` | Practice, profile, chat suggestion, history, accessibility controls, and independent Crisis panel |
+| `backend/app/main.py` | FastAPI validation, exercise/session rules, profile/history persistence, and model boundary |
+| `backend/app/model.py` | Gemini REST adapter and clearly labeled mock/fallback behavior |
+| `backend/app/exercises.py` | The five fixed exercise definitions; first two are course skills, last three are app-authored |
+| `backend/tests/fixtures/assignment3_part3_scenarios.json` | Eighteen fictional scenario inputs and expected choices |
+| `docs/application-design.md` | Research grounding and dated design decisions |
+| `evidence/` | Separate expected/observed automated, live, and manual evidence |
+| `prompts/` | Curated implementation and revision notes, not a full chat export |
+| `report.md` | First-person Assignment 3.3 submission draft; final links and student evidence remain pending |
 
-Use fictional scenarios only. Do not offer, deploy, link, or recommend this coursework prototype as support for a person in distress. Never include real identities, private conversations, API keys, or `.env` contents in repository files or evidence.
+Never offer, deploy, or recommend this local coursework prototype as support for someone in distress. Use fictional scenarios only; do not enter real identities or real distress narratives.

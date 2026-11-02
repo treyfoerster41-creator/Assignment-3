@@ -1,0 +1,20 @@
+[
+  {"id": "S01", "message": "Fictional student Jordan wants a four-in, six-out breathing practice before a class presentation.", "expected_exercise_id": "breathing-4-6"},
+  {"id": "S02", "message": "For this made-up classroom example, Jordan would rather look around and name things in the room.", "expected_exercise_id": "grounding-54321"},
+  {"id": "S03", "message": "A fictional student asks to notice five sights, four points of contact, and nearby sounds.", "expected_exercise_id": "grounding-54321"},
+  {"id": "S04", "message": "The demo user explicitly requests the fixed 4-in/6-out breathing card.", "expected_exercise_id": "breathing-4-6"},
+  {"id": "S05", "message": "Jordan wants a short exercise that uses the classroom surroundings rather than breath counting.", "expected_exercise_id": "grounding-54321"},
+  {"id": "S06", "message": "A fictional student asks for a quiet one-minute option before a timed quiz.", "expected_exercise_id": "breathing-4-6"},
+  {"id": "S07", "message": "In a fictional scenario, the room is noisy and Jordan wants to orient to what is around them.", "expected_exercise_id": "grounding-54321"},
+  {"id": "S08", "message": "The demo profile asks for 5-4-3-2-1 sensory grounding with no typing.", "expected_exercise_id": "grounding-54321"},
+  {"id": "S09", "message": "The fictional user asks to use the paced breathing exercise again.", "expected_exercise_id": "breathing-4-6"},
+  {"id": "S10", "message": "Jordan asks to try the other fixed exercise instead of their usual breathing choice.", "expected_exercise_id": "grounding-54321"},
+  {"id": "S11", "message": "The fictional profile usually selects grounding, but this message explicitly asks for breathing.", "expected_exercise_id": "breathing-4-6"},
+  {"id": "S12", "message": "A made-up student in a library requests one short, low-effort exercise.", "expected_exercise_id": "breathing-4-6"},
+  {"id": "S13", "message": "Jordan chooses sensory grounding and wants each sense prompt shown one at a time.", "expected_exercise_id": "grounding-54321"},
+  {"id": "S14", "message": "A fictional classroom user has no preference and asks for a brief practice suggestion.", "expected_exercise_id": "breathing-4-6"},
+  {"id": "S15", "message": "The demo student explicitly prefers noticing things they can see, feel, hear, smell, and taste.", "expected_exercise_id": "grounding-54321"},
+  {"id": "S16", "message": "A fictional student wants to focus on one object in view for a short pause.", "expected_exercise_id": "visual-anchor"},
+  {"id": "S17", "message": "The demo user asks for a short option to notice nearby sounds.", "expected_exercise_id": "sound-noticing"},
+  {"id": "S18", "message": "A fictional student asks to notice where they feel supported by the chair.", "expected_exercise_id": "contact-points"}
+]

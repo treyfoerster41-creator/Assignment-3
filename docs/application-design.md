@@ -1,8 +1,28 @@
 # Still — Assignment 3 design and implementation notes
 
-Updated October 21, 2026. The Assignment 3.1 proposal is retained below. The implementation choices for Assignment 3.2 are recorded first; `report.md` is the current Part 2 submission draft.
+Updated November 2, 2026. The Assignment 3.1 proposal and Part 2 implementation note are retained below as historical checkpoints. The current implementation and root `report.md` are for Assignment 3.3.
 
-## Assignment 3.2 implementation update
+## Assignment 3.3 implementation update
+
+I kept the two course-provided scripts unchanged: paced breathing (six 4-in/6-out cycles, 60 seconds) and 5-4-3-2-1 sensory grounding (five 15-second prompts, 75 seconds). At the student's later request, I added three short app-authored options: visual anchor, sound noticing, and support points. Each new option has three fixed prompts at 15 seconds each. I do not attribute those additions to the course or its study. The screen advances prompts without typing or another tap. All five can be paused, ended, or left for Crisis support. Optional browser speech is off by default, requires no microphone, and leaves visible instructions in place.
+
+I added a separate Profile page. It saves a local display label, the most recent practice the person deliberately started, and Gemini, demo, or local-fallback recommendations attached to a profile. Profile-linked practice and conversation history remain visible in History. The profile label is not included in Gemini context. A user may switch profiles, delete a profile and its recommendations, or clear history while keeping profile labels. These are local records, not accounts or secure cloud storage; the interface asks for fictional names and warns against saving real health details.
+
+The model adapter asks Gemini for a short conversational reply and one ID from a five-option schema. It is prompted to keep a stated de-stress goal in view when a conversation briefly wanders, then gently point to the separate suggestion card just below its reply. I moved the card beside the latest response so the user does not have to hunt for it. FastAPI checks the ID against the fixed catalog. Model text cannot supply exercise steps or timing, start a practice, write database rows directly, choose a page, or control Crisis support. The user alone starts a session with the practice button.
+
+When Gemini is not configured, the app labels its deterministic rules and replies as demo mode. When a configured live request fails or returns unusable output, local rules can still select one of the five fixed options using the fictional message, recent goal, and permitted activity history. The chat and card label that option as a local fallback, not a Gemini choice. A server exception outside that selection path still returns a no-recommendation fallback. The latest live request has not been retested after these chat and fallback changes.
+
+The backend migration expands saved exercise IDs to the five-option catalog and adds a transparent fallback source for recommendations. It copies existing profile, conversation, session, and recommendation rows. Automated migration checks use temporary databases; the production database was not cleared or reseeded.
+
+I ran 18 distinct fictional messages through the app's deterministic mock selection and verified the saved recommendation for each. Additional invariants check that generated IDs outside the five fixed options are suppressed, that a recommendation does not start a practice until the user chooses, and that a limited crisis phrase bypasses the model and does not store the triggering text. A separate simulated provider failure confirms that an explicitly labeled local fallback option can be saved without creating a session. These are software checks, not participant research or evidence that Gemini will return the same choices.
+
+One unexpected test result showed why profile context matters: a vague “short exercise” prompt inherited the preceding grounding recommendation when I initially reused one profile across all scenarios. I isolated the 18 cases so each measured its own request, and kept a separate check that a vague follow-up can use recent profile activity. This is an implementation observation, not a finding about people or clinical outcomes.
+
+An untested limitation is how the grounding prompts work for someone who cannot or does not want to use a particular sense, especially smell or taste. The screen now says the person may let a prompt pass, but the fixed sequence does not offer an alternate sense prompt or a skip button. The three app-authored additions are brief design prototypes, not user-tested skills or evidence-based claims. I have not conducted a user study, a formal accessibility review, or a live Gemini check of the latest goal-bridging prompt. The course's R/D findings still guide the relevant design constraints: keep the core skill short (R1), safety easy to reach (R2/D4), stopping voluntary (R3), the user in control (R4), one action/prompt at a time (D2), low emotional cost (D3), restrained language/motion (D6), and personalize only from light optional history (D5). D1 does not establish a way to detect rising distress, so the app makes no such inference.
+
+Google's official [Gemini model documentation](https://ai.google.dev/gemini-api/docs/models) and [structured output documentation](https://ai.google.dev/gemini-api/docs/structured-output) describe the model listing and JSON-schema response mode used here. Checked November 2, 2026. A separate direct request and an end-to-end fictional browser chat succeeded with `gemini-3.6-flash` before the current goal-bridging and fallback changes; these earlier live checks are recorded separately from mocked transport tests in the [evidence log](../evidence/evidence-log.md).
+
+## Assignment 3.2 implementation update — historical checkpoint
 
 The student asked to begin Part 2 and keep the breathing/meditation program as the focus. I narrowed the first working version to one complete course skill: six cycles of a four-second inhale and six-second exhale. The app does not implement the 5-4-3-2-1 practice yet. That is a scope reduction from the Part 1 proposal, not a claim that grounding is complete.
 
@@ -10,7 +30,7 @@ The active exercise is 60 seconds from the first breathing instruction to the si
 
 The exercise advances automatically after one start action. Optional browser speech synthesis can speak the current inhale/exhale cue; it is off by default, does not use a microphone, and leaves the same visible text and shape available. If the browser lacks speech synthesis, the app explains that visual cues remain available. Speech is canceled when the exercise pauses or ends. The control adds no required interaction once practice begins.
 
-The optional check-in remains outside the exercise. FastAPI sends a bounded recent conversation and the current fictional message to Gemini, then persists the user and assistant messages. The system instruction limits the reply to a short, neutral reflection and prohibits diagnosis, therapy claims, advice, or new skill steps. The Vue app owns the exercise script and timer; the model cannot select the page, change breathing counts, write to SQLite, or decide whether Crisis support is visible. With no `GEMINI_API_KEY`, the app shows a fixed response labeled as a mock. A live request failure receives a fixed, sanitized fallback. No Gemini key is present in this project as of this update, so no live model response has been observed.
+The optional check-in remains outside the exercise. FastAPI sends a bounded recent conversation and the current fictional message to Gemini, then persists the user and assistant messages. The system instruction limits the reply to a short, neutral reflection and prohibits diagnosis, therapy claims, advice, or new skill steps. The Vue app owns the exercise script and timer; the model cannot select the page, change breathing counts, write to SQLite, or decide whether Crisis support is visible. With no `GEMINI_API_KEY`, the app shows a fixed response labeled as a mock. A live request failure receives a fixed, sanitized fallback. At the Part 2 checkpoint no key had been configured; Part 3 later added one, but live checks have returned HTTP 503 or timed out.
 
 The model ID is `gemini-3.8-flash`, using Google's documented `generateContent` REST API through backend HTTPX with the API key in the `x-goog-api-key` header. The model and REST pattern were checked against [Google's model list](https://ai.google.dev/gemini-api/docs/models) and [text-generation documentation](https://ai.google.dev/gemini-api/docs/generate-content/text-generation) on October 21, 2026. The live integration is optional and not yet verified with a key.
 
@@ -118,7 +138,7 @@ An optional chat message that matches a small explicit phrase list receives a fi
 - **SQLite** provides durable local conversations and exercise history without setting up a remote database. A single fictional local profile is enough for this course prototype; users can inspect and delete their saved records.
 - **Gemini through a backend-only request** is implemented as an optional path using HTTPX. It requires a student-configured backend-only key; without one, the response is a fixed mock. The core practice and crisis-support panel work without Gemini.
 
-The required localhost stack has been installed and exercised locally. See the evidence log for exact automated and browser checks; the live model and formal accessibility review remain unverified.
+The required localhost stack has been installed and exercised locally. One fictional Gemini 3.6 response has been verified end to end; see the evidence log. A formal accessibility review remains unverified.
 
 Planned storage uses one fictional local demo profile, not authentication:
 
@@ -189,30 +209,24 @@ The instructor supplied the R1-R4/D1-D6 study summary for this assignment. The d
 | Milestone | Due | Scope in this plan |
 | --- | --- | --- |
 | 3.1 Research and Design | October 15, 2026, 11:59 PM Eastern | Completed design checkpoint; report preserved in the archive. |
-| 3.2 Working Application and Safety | October 22, 2026, 11:59 PM Eastern | Current scope: one working breathing practice, optional mocked reflection, SQLite history, and independent safety panel. Student review and submission remain pending. |
-| 3.3 Integration, Evaluation, and Demonstration | October 29, 2026, 11:59 PM Eastern | Later work: refine, evaluate, and explain what was learned. |
-
-Part 2 does not claim completion of the later evaluation and demonstration milestone.
+| 3.2 Working Application and Safety | October 22, 2026, 11:59 PM Eastern | Historical checkpoint: one working breathing practice, optional mock reflection, SQLite history, and independent safety panel. |
+| 3.3 Integration, Evaluation, and Demonstration | October 29, 2026, 11:59 PM Eastern | Current implementation includes five fixed practices (two course skills and three app-authored additions), profile-backed recommendations, Gemini integration, eighteen mock scenarios, and behavior checks. After initial 503s on 3.8 and a truncated 3.6 response at the old token cap, the cap was raised and a fictional browser chat returned a live 3.6 response with a grounding recommendation. Later revisions guide replies back to an optional choice, constrain overreaching model text, and keep session start behind the user's button. The current prompt/fallback changes have not had a fresh live check; student review and recordings remain pending. |
 
 ## Milestone record and next work
 
 Part 1 established the design, early mockup, model/context boundaries, data plan, research mapping, project instructions, and report. Its report is preserved in `docs/assignment-3-part-1-report-archive.md`.
 
-The student reported a Part 1 VS Code review; the earlier design checkpoint is present in Git history. For Part 2, the app is implemented but remains a draft pending student review. The next work is to:
+The student reported a Part 1 VS Code review; the earlier design checkpoint is present in Git history. The Part 2 checkpoint and report are preserved. For Part 3, the next work is to get one successful fictional live Gemini response, review the changed files and app, record the required demo and process screencast, and then add the exact commit and accessible recording links to `report.md`. No Part 3 commit, push, or Canvas upload is claimed.
 
-1. Review the actual Part 2 files in VS Code and personally accept or revise the app in the browser. If a database GUI review is performed, record it separately from the agent's checks.
-2. Decide whether to configure a live Gemini key for the optional reflection, then verify one live response without entering personal information.
-3. After review, record the exact Part 2 commit and push; then update `report.md` to link the committed version.
-4. Reserve the assignment's broader 15-scenario evaluation, additional behavior checks, live-model case selection, and demo/process recording for Part 3 as required by the course instructions.
-
-The Part 2 local browser run did verify a complete timed practice, pause/end controls, mock reflection, API-offline crisis access, and persisted history after refresh and backend restart. It did not establish live-model behavior, formal accessibility, student review, or class acceptance.
+Part 3's automated checks and one read-only local browser inspection are listed in the evidence log. They do not establish live model behavior, formal accessibility, student review, or class acceptance.
 
 ## Open decisions and limits
 
 - Separate Assignment 3 folder is `/Users/treyfoerster/IST 402/Assignment 3`; GitHub repository: [Assignment-3](https://github.com/treyfoerster41-creator/Assignment-3). The name Still is provisional.
-- Grounding remains a later option; the exact pace and handling of unavailable senses have not been implemented or tested.
+- Grounding now runs as a fixed 75-second sequence. The screen lets the user pass on a prompt, but does not offer an alternate sense prompt or button to skip; that limitation has not been user-tested.
 - The phrase list is implemented as limited routing, but coverage beyond the checked fictional examples is unknown.
-- Gemini model ID `gemini-3.8-flash` is selected, but a key is absent and no live request has been made.
-- Audio is not included. The app has not received a formal accessibility audit or testing in additional browsers.
+- Gemini model ID `gemini-3.6-flash` is selected in the ignored `.env`. Gemini 3.8 returned HTTP 503; the first 3.6 response was cut off at the old 160-token cap. With a 512-token cap, a fictional direct request and a fictional browser chat both returned valid replies; the browser also displayed a fixed grounding suggestion. See the evidence log for agent-run checks. Student acceptance remains pending.
+- The app has optional browser speech synthesis, but a person has not confirmed audibility in the target browser. It has not received a formal accessibility audit or testing in additional browsers.
+- The current chat renders a short transcript, handles greetings with an optional preference question, and uses a small fixed rule for suggesting grounding when the fictional message asks to focus on surroundings. Reduced motion forces the breathing orb to one fixed scale; the optional spoken breathing cue is modestly encouraging. Browser voice quality depends on the device, and these latest interactions still need student/browser review.
 
 Current verification: the browser, automated checks, model mode, and local records are detailed in `evidence/evidence-log.md`. A local ignored SQLite database was created with only the fictional demo conversation and two test sessions used for the browser run. The Assignment 2 project and travel data were not changed. Student VS Code/database review, live Gemini testing, a recording, commit, push, and Canvas upload remain unclaimed.

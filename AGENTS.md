@@ -1,50 +1,51 @@
 # Assignment 3 project instructions
 
-## Current checkpoint
+## Current checkpoint — Assignment 3.3
 
-- The user has started Assignment 3.2. Build a coherent working localhost prototype around the fixed 4-in/6-out breathing practice, optional conversational reflection, SQLite history, and independent Crisis support panel.
-- Part 1 remains a research/design checkpoint. Its original report is archived at `docs/assignment-3-part-1-report-archive.md`; root `report.md` is for Part 2.
-- Keep `report.md`, `README.md`, the design note, prompts, evidence log, AI-use disclosure, and handoff accurate to observed behavior.
-- Do not commit, push, or claim Canvas submission until the student has reviewed the final Part 2 files and any manual browser/database observations that are attributed to them.
+- Continue the Still breathing/meditation coursework prototype. Part 1 is archived at `docs/assignment-3-part-1-report-archive.md`; Part 2 is archived at `docs/assignment-3-part-2-report-archive.md`; root `report.md` is for Part 3.
+- Part 3 refines the app, tests it with at least 15 fictional scenarios and behavior invariants, evaluates an appropriate limited live-model sample when credentials permit, records one surprising result and one untested limitation, and includes the required demo/process recordings and evidence.
+- Keep `report.md`, README, design, prompts, evidence, AI-use disclosure, and handoff accurate to what was actually built and observed.
+- Do not claim student VS Code review, student browser acceptance, a live response, a screen recording, commit, push, or Canvas upload until each actually occurs. Ask before committing or pushing if the user has not explicitly requested those actions for this milestone.
 
 ## Product boundaries
 
-- This is a local coursework skills prototype evaluated only with fictional scenarios. Never offer, deploy, link, or recommend it to a real person as mental health support.
-- Do not claim diagnosis, therapy, monitoring, or clinical effectiveness. Do not imply a person is watching messages.
-- Keep selected course skill steps exact. The implemented practice is six cycles of a four-second inhale and six-second exhale. Do not let a language model invent therapeutic steps or control exercise timing, navigation, persistence, or crisis access.
-- A clearly named crisis-support route must remain available on every screen and work when the model, backend, or any text-matching rule fails.
-- Describe any crisis phrase matching as limited routing, not a distress detector. Never infer distress from sentiment, typing speed, pauses, or a diagnosis.
-- Test with fictional scenarios only. Do not collect real identities or real distress narratives. Keep API keys and `.env` contents out of Git and evidence.
+- This is a local coursework skills prototype evaluated only with fictional scenarios. Never offer, deploy, or recommend it as real mental-health support.
+- Do not claim diagnosis, therapy, monitoring, or clinical effectiveness. Do not imply anyone is watching messages. Do not infer distress from clicking, sentiment, typing speed, pauses, or a diagnosis.
+- Keep the two course-provided exercise scripts unchanged: paced breathing (six 4-second inhales and 6-second exhales, 60 seconds total) and 5-4-3-2-1 sensory grounding (five fixed 15-second prompts, 75 seconds total). The student later requested three optional app-authored additions: visual anchor, sound noticing, and support points (three fixed 15-second prompts each). Label these as app-authored options, not course-provided skills or study findings. Do not let a model invent steps, timing, or scripts.
+- The user explicitly chooses whether to start a recommendation. The model cannot change navigation, start/pause/stop a session, write to SQLite, or control crisis routing.
+- Keep a clearly named Crisis support route visible and usable on every screen. It must work when the model, backend, or any text-matching rule fails.
+- Describe phrase matching as limited routing, never as a distress detector. It may miss or overmatch wording. Matched user text is not saved or sent to Gemini.
+- Use fictional scenarios only. Do not enter or retain real identities, personal health details, or real distress narratives. Keep keys and `.env` contents out of Git and evidence.
 
-## Design decisions to preserve
+## Interaction and access
 
-- Part 1 proposed two fixed skills. Part 2 implements the breathing practice first; grounding remains a documented design option and is not claimed as implemented.
-- The implemented breathing sequence is 60 seconds: six four-second inhales and six six-second exhales. Measure from the first breathing instruction through the sixth exhale; report entry/setup separately. User-chosen pauses are excluded. Never force completion or exit.
-- Let the user start, pause, resume, or end the fixed sequence. Show one breathing cue at a time.
-- Minimize screen interaction: one explicit start action begins the automatically advancing 60-second sequence, with no required taps while the user breathes. Keep pause, end, and Crisis support available. If voice cues are added, check them in the target browser and retain a usable visual alternative.
-- Keep writing, emotional disclosure, and configuration optional. Prior use may suggest an option, but must not silently route the user or hide alternatives.
-- Keep interface language neutral and low stimulus. Respect reduced-motion settings and provide a static pacing alternative.
-- Gemini is accessed only through FastAPI with HTTPX. The documented model ID is `gemini-3.8-flash` (checked against Google's official API documentation on October 21, 2026). No key is configured in this project; mock mode is clearly labeled until the student configures a backend-only key in the ignored root `.env`.
+- Minimize interaction during meditation. One start action begins the practice; prompts advance automatically. Keep Pause, End, and Crisis support available.
+- Optional browser speech synthesis is off by default, uses no microphone, and never replaces visible cues. Keep a static/reduced-motion option.
+- Keep writing, emotional disclosure, and configuration optional. Saved profile/history can influence a suggestion, but never hide alternatives or silently start an exercise.
+- Keep language neutral, low stimulus, and nonjudgmental. Do not present profiles as authenticated accounts or secure cloud storage; they are local labels.
 
-## Planned architecture
+## Architecture and data
 
-- Vue owns rendering, explicit view state, timing cues, accessible controls, and loading/error display.
-- FastAPI owns validation, fixed skill definitions, bounded backend-only model requests, SQLite reads/writes, and sanitized errors.
-- SQLite stores only fictional local preferences, conversations, messages, exercise status/progress, and optional feedback. Provide a way to review and delete saved history.
-- Model context must be relevant and bounded. The model does not execute SQL, determine crisis routing, create exercise steps, or write application records. The backend owns persistence.
+- Vue owns rendering, explicit view state, activity timing, accessible controls, and API error display. It loads exercise definitions and timing from the backend catalog, with bundled static definitions only as an offline display fallback.
+- FastAPI owns validation, fixed skill definitions, bounded backend-only Gemini requests, SQLite reads/writes, and sanitized errors.
+- Gemini may return a short conversational acknowledgment and one whitelisted fixed exercise ID. The server maps that ID to a fixed script. Prompt the chat to retain a stated pause/de-stress goal through a side topic and gently point to the optional suggestion. If Gemini fails, local rules may offer one fixed recommendation, clearly labeled as a local fallback rather than a live model selection. Model text is untrusted: replace text that names/suggests activities or implies a practice is starting. The model cannot invent exercises or start/pause/stop a session; only a user-selected app button can start one.
+- SQLite stores local profile labels, user-selected practice preference, fictional messages, fixed exercise sessions/progress, and recommendations. Provide controls to inspect/delete history and delete a profile; deleting a profile must not silently delete the person's linked session/conversation history, though it removes recommendations.
+- Keep the API key in the ignored root `.env`, backend-only. Never use `VITE_` credentials, print or log key values, log provider URLs, expose raw provider errors, or put credentials in evidence.
+- Preserve existing SQLite records and deletions. Apply additive migrations. Never clear/reseed the user's database to make evidence cleaner. Automated tests must use temporary databases.
+- Do not add dependencies without student approval. Part 3 uses the approved Vue/Vite/FastAPI/Uvicorn/HTTPX stack.
 
 ## Verification and evidence
 
-- Keep automated checks separate from manual browser/database observations and live-model responses.
-- Record expected and observed results, date, browser, whether a response is mocked or live, and any limitations.
-- Use mocked model responses for routine checks. If live calls are used, cap them at 50 per session and return to mocks at the limit.
-- Do not claim a browser check, student VS Code review, commit, push, or Canvas submission until it actually happens.
-- Include at least one failed or revised approach in the curated, redacted evidence log. Do not export the full conversation.
+- Keep automated/mock checks separate from manual browser observations and live Gemini outputs. Record expected and observed behavior, date, environment, and limitations.
+- Use at least 15 distinct fictional prompts/scenarios and three explicit behavior invariants. Do not call predetermined fixtures live-model evidence.
+- When a Gemini key is available, cap live calls at 50 per session and return to mocks at the limit. Without a key, document the live check as blocked/pending; never invent a model response.
+- Include a failure or revised approach in the curated, redacted evidence log. Do not export the full conversation.
+- The student must create/verify required demo and process screencasts. Keep `.env`, real data, and secrets out of recordings.
+- Run backend tests and the frontend production build after changes. Report exact counts/results, and preserve limitations. Keep the 18 scenario fixtures identified as fictional software checks, separate from live Gemini evaluation.
 
-## Technology and project structure
+## Git and submission
 
-- Use Vue, FastAPI, and SQLite on localhost. Current project-local versions are recorded by `frontend/package-lock.json` and `backend/requirements.txt`; the user approved the latest releases for this implementation.
-- Ask before adding any future dependency beyond the approved Vue/Vite/FastAPI/Uvicorn/HTTPX stack.
-- Keep credentials backend-only in an ignored local `.env`. `.env.example` contains names only, never real credentials.
-- Keep the project self-contained. Do not import the Expedia Lite database, hotel data, bookings, or Geoapify code into this project.
-- Clearly distinguish automated/mock checks from manual browser/database observations and live Gemini behavior. Do not call a mock response a live model result.
+- Work in the existing project unless the student requests another branch/worktree. Preserve the Part 1 and Part 2 report checkpoints.
+- The final Part 3 `report.md` must use first-person prose and include repository URL, exact submitted commit, links to accessible design/evidence/recordings, evaluation results, one surprising finding, one untested limitation, and the app's limits.
+- Do not invent a submitted commit or accessible video URL. Leave placeholders/pending items explicit until supplied or confirmed.
+- Keep all coursework software local. Do not import data or code from Expedia Lite or unrelated projects.
